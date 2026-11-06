@@ -283,5 +283,24 @@ class SkillProofEndpointDirectTestSuite(unittest.TestCase):
             update_profile(body=UpdateProfileRequest(name="Hacker"), u=other_user)
         self.assertEqual(ctx.exception.status_code, 404)
 
+    def test_10_oversized_resume_is_rejected_after_bounded_read(self):
+        import asyncio
+        from app.main import analyze
+
+        upload_file = UploadFile(
+            filename="oversized.pdf",
+            file=io.BytesIO(b"x" * (8 * 1024 * 1024 + 1)),
+        )
+        with self.assertRaises(HTTPException) as ctx:
+            asyncio.run(
+                analyze(
+                    resume=upload_file,
+                    job_description="A detailed job description with enough text " * 4,
+                    role_title="Software Engineer",
+                    u=None,
+                )
+            )
+        self.assertEqual(ctx.exception.status_code, 413)
+
 if __name__ == "__main__":
     unittest.main()

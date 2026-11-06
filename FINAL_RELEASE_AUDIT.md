@@ -1,7 +1,7 @@
 # SkillProofAI Final Release Audit
 
 **Audit scope:** `SkillProofAI_GitHub_Release` only  
-**Status:** Technical checks passed; public publication is not authorized or performed.
+**Status:** Local technical checks passed; public deployment is approved but not yet performed. Video publication has not been authorized or performed.
 
 ## Files changed
 
@@ -23,6 +23,10 @@
 - `backend/test_isolated_endpoints.py` and `backend/test_suite.py` — use unique temporary SQLite databases and synthetic `example.org` addresses.
 - `frontend/package.json` — binds the development server to loopback.
 - `frontend/src/main.jsx` and `frontend/src/supabase.js` — allow the frontend to run without Supabase settings and explain how to enable that optional auth mode.
+- `render.yaml`, `frontend/vercel.json`, and `DEPLOYMENT_REPORT.md` — prepare deployment configuration and document that hosting is not provisioned.
+- `demo_video/` — add a fictional sample resume and the video script, storyboard, subtitles, and recording checklist; no recorded video is included.
+- `backend/app/main.py` and `backend/test_isolated_endpoints.py` — bound PDF upload reads and cover oversized uploads.
+- `frontend/src/main.jsx` and `frontend/vite.config.js` — remove fabricated initial analysis data and require a valid HTTPS API origin for production builds.
 
 `frontend/package-lock.json` was not changed; `npm ci` succeeded against the existing lockfile.
 
@@ -40,10 +44,10 @@
 
 | Test module | Result |
 |---|---:|
-| `backend/test_isolated_endpoints.py` | 9 passed |
+| `backend/test_isolated_endpoints.py` | 10 passed |
 | `backend/test_suite.py` | 19 passed |
 | `backend/test_cors_production.py` | 11 passed |
-| **Total** | **39 passed** |
+| **Total** | **40 passed** |
 
 `python -m compileall` completed successfully for the backend application and test files. The suites were run separately, each in its own process and with a temporary database.
 
@@ -52,7 +56,8 @@ Non-blocking warnings remain for the existing PyMuPDF `fitz` import and FastAPI 
 ## Frontend QA
 
 - `npm ci` — passed; npm reported 0 vulnerabilities.
-- `npm run build` — passed with Vite 8.3.5.
+- `npm run build` — passed with Vite 8.3.5 when supplied a test-only HTTPS API origin.
+- A production build with `http://localhost:8000` was rejected as expected; no localhost/loopback references were found in the successful production bundle.
 - The production build transformed 1,608 modules and generated `frontend/dist/`.
 - The build succeeded without a frontend `.env`; Supabase auth is optional and is disabled until configured.
 
@@ -63,7 +68,7 @@ Executed `.\start_local.ps1` from the release folder. It used the release-local 
 ## Remaining limitations and missing release items
 
 - No `LICENSE` file is present. Select and add a license before describing the project as an open-source release.
-- This release folder has no `.git` directory or configured Git history. It was not committed, pushed, published, or deployed.
+- The release folder has Git history and tracks `origin/main`. Deployment-preparation changes are approved for commit and push; provider sign-in is still needed before deployment.
 - No screenshots are available; the README contains a placeholder section.
 - Supabase authentication requires the user's own Supabase configuration. No account or database is shipped; guest analysis is available without Supabase.
 - The Python requirements use version ranges rather than a fully resolved lockfile. No frontend automated test suite is present; frontend validation here is the production build.
@@ -96,4 +101,4 @@ Pop-Location
 
 ## GitHub readiness
 
-**Technically ready for review:** backend tests, Python compilation, frontend production build, and startup smoke checks passed; no real credentials or database files are included. **Not yet ready for public distribution as an open-source project until a license is selected.** No Git operation or publication was performed. Any commit or push requires the owner's separate approval.
+**Technically ready for review:** backend tests, Python compilation, frontend production build, and startup smoke checks passed; the synthetic PDF was parsed and produced demonstrated, partial, and missing evidence results. **Not yet ready for public distribution as an open-source project until a license is selected.** GitHub publication is authorized by the owner; public deployment is pending provider sign-in.

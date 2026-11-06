@@ -1,0 +1,88 @@
+1
+00:00:00,000 --> 00:00:04,800
+SkillProofAI helps job seekers move from listing skills to showing evidence.
+
+2
+00:00:04,800 --> 00:00:09,000
+An evidence-based career intelligence platform
+turns a resume and target role into clear next steps.
+
+3
+00:00:13,000 --> 00:00:20,000
+Candidates often wonder: does my resume demonstrate
+what this role asks for?
+
+4
+00:00:20,000 --> 00:00:31,000
+A keyword match cannot answer that.
+SkillProofAI focuses on the proof a resume contains.
+
+5
+00:00:31,000 --> 00:00:39,500
+Choose a role, add a PDF resume,
+and paste the job requirements.
+
+6
+00:00:39,500 --> 00:00:47,000
+This uses a clearly fictional sample.
+Selectable PDF text is processed in memory.
+
+7
+00:00:47,000 --> 00:00:55,500
+The coverage indicator summarizes evidence
+across the role's requirements.
+
+8
+00:00:55,500 --> 00:01:06,000
+It is not a hiring score or prediction.
+Results depend on this particular resume.
+
+9
+00:01:06,000 --> 00:01:15,000
+Each classification can be traced to resume text.
+A demonstrated result has a direct mention and support.
+
+10
+00:01:15,000 --> 00:01:27,000
+Partial means more proof would help.
+Not evidenced means no reliable anchor was found here.
+
+11
+00:01:27,000 --> 00:01:37,500
+For gaps, the app suggests focused
+two-day portfolio sprints with concrete deliverables.
+
+12
+00:01:37,500 --> 00:01:47,000
+Build a project, document the work,
+and strengthen the evidence.
+
+13
+00:01:47,000 --> 00:01:56,000
+Interview preparation is tied to the same skills.
+Practice explaining real decisions and outcomes.
+
+14
+00:01:56,000 --> 00:02:02,000
+Connect context, action, result,
+and what you learned.
+
+15
+00:02:02,000 --> 00:02:09,000
+Signed-in users can save analysis history
+and export a PDF evidence report.
+
+16
+00:02:09,000 --> 00:02:17,000
+React and Vite, FastAPI and Python,
+SQLite, PyMuPDF, and ReportLab.
+
+17
+00:02:17,000 --> 00:02:25,000
+SkillProofAI helps students see what their resume proves
+and what evidence to build next.
+
+18
+00:02:25,000 --> 00:02:34,000
+Show your skills. Strengthen your evidence.
+Build your future.

@@ -1,5 +1,6 @@
 import io
 import json
+from xml.sax.saxutils import escape
 from typing import Optional
 import fitz
 from fastapi import FastAPI, UploadFile, File, Form, Depends, HTTPException, Header
@@ -230,14 +231,15 @@ async def analyze(
     role_title: str = Form("Target role"),
     u=Depends(current),
 ):
-    if not resume.filename.lower().endswith(".pdf"):
+    resume_name = resume.filename or ""
+    if not resume_name.lower().endswith(".pdf"):
         raise HTTPException(415, "Upload a PDF resume")
     if len(job_description.strip()) < 80:
         raise HTTPException(
             422,
             "Please provide a detailed job description (at least 80 characters)",
         )
-    data = await resume.read()
+    data = await resume.read(8 * 1024 * 1024 + 1)
     if len(data) > 8 * 1024 * 1024:
         raise HTTPException(413, "Resume must be 8 MB or smaller")
     try:
@@ -252,13 +254,13 @@ async def analyze(
             "No selectable text found. Scanned PDFs need OCR before analysis",
         )
     result = analyse(text, job_description, role_title)
-    result["resume_name"] = resume.filename
+    result["resume_name"] = resume_name
     result["analysis_id"] = None
     if u:
         with conn() as c:
             cur = c.execute(
                 "INSERT INTO analyses(user_id,role_title,resume_name,result_json) VALUES(?,?,?,?)",
-                (u["id"], role_title, resume.filename, json.dumps(result)),
+                (u["id"], role_title, resume_name, json.dumps(result)),
             )
             c.commit()
             result["analysis_id"] = cur.lastrowid
@@ -321,7 +323,7 @@ def pdf_report(aid: int, u=Depends(required)):
     story = [
         Paragraph("SkillProof AI", styles["Title"]),
         Paragraph("Evidence-based career readiness report", styles["Heading2"]),
-        Paragraph("Role: " + d["role_title"], styles["BodyText"]),
+        Paragraph("Role: " + escape(d["role_title"]), styles["BodyText"]),
         Spacer(1, 12),
     ]
     s = d["summary"]

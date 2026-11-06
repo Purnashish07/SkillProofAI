@@ -6,6 +6,7 @@ node_modules/
 dist/
 build/
 coverage/
+.vercel/
 .env
 .env.*
 !*.env.example
@@ -20,3 +21,4 @@ coverage/
 *.key
 *.p12
 *.pfx
+*.mp4

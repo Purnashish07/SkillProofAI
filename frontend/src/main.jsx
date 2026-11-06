@@ -30,72 +30,11 @@ import {
 import { supabase, supabaseConfigured } from './supabase';
 import './style.css';
 
-const API = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const API =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? 'http://127.0.0.1:8000' : '');
 const JD =
   'Software Development Engineer Intern. We need Python, React, REST APIs, SQL, Git and Docker. Candidate should understand data structures and problem solving, build reliable software, write tests, collaborate in an Agile team, communicate technical decisions and have exposure to cloud deployment.';
-
-const demo = {
-  role_title: 'Software Development Engineer Intern',
-  summary: { total: 8, demonstrated: 3, partial: 2, missing: 3, readiness: 50 },
-  disclaimer:
-    'Not Evidenced means no proof was found in this resume, not that the person lacks the skill. This is decision support, not a hiring decision.',
-  skills: [
-    ['Python', 'demonstrated', 0.91, 'Built a Python automation tool to validate API responses and export structured JSON reports.'],
-    ['React', 'demonstrated', 0.86, 'Developed a responsive React dashboard with reusable components and interactive charts.'],
-    ['Git', 'demonstrated', 0.82, 'Maintained project source code on GitHub using feature branches and documented commits.'],
-    ['REST APIs', 'partial', 0.48, 'Integrated external APIs into a student productivity dashboard.'],
-    ['SQL', 'partial', 0.39, 'Worked with structured application data and database records.'],
-    ['Docker', 'missing', 0, ''],
-    ['Agile', 'missing', 0, ''],
-    ['Cloud Computing', 'missing', 0, ''],
-  ].map(([skill, status, confidence, snippet]) => ({
-    skill,
-    status,
-    confidence,
-    interpretation:
-      status === 'missing'
-        ? 'No reliable evidence was found in the supplied resume.'
-        : status === 'partial'
-        ? 'Related evidence was found, but depth needs clarification.'
-        : 'Direct skill mention supported by an action-oriented resume statement.',
-    evidence: snippet
-      ? [{ snippet, signals: ['resume source anchor'], match: confidence }]
-      : [],
-    review_required: status !== 'demonstrated',
-  })),
-  action_plan: [
-    {
-      skill: 'Docker',
-      title: 'Containerize a Small API',
-      duration: '2 days',
-      description:
-        'Write a Dockerfile, build an image and document how to run an API with environment variables.',
-      deliverables: ['Dockerfile', 'Image', 'Ports', 'Environment'],
-    },
-    {
-      skill: 'Agile',
-      title: 'Run a Mini Sprint',
-      duration: '2 days',
-      description:
-        'Turn a small feature into user stories, prioritize tasks and document a two-day sprint review.',
-      deliverables: ['User stories', 'Sprint board', 'Review notes'],
-    },
-    {
-      skill: 'Cloud Computing',
-      title: 'Deploy a Proof-of-Concept',
-      duration: '2 days',
-      description:
-        'Deploy a small application and document architecture, configuration and limitations.',
-      deliverables: ['Live demo', 'Architecture note', 'Deployment guide'],
-    },
-  ],
-  interview_questions: [
-    { skill: 'Python', question: 'How would you handle exceptions and validate external input?' },
-    { skill: 'React', question: 'When would you use useEffect, and what causes repeated effects?' },
-    { skill: 'REST APIs', question: 'How do HTTP methods and status codes shape a REST API?' },
-    { skill: 'SQL', question: 'Explain INNER JOIN vs LEFT JOIN with an example.' },
-  ],
-};
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('sp_token') || '');
@@ -104,7 +43,7 @@ function App() {
   const [resume, setResume] = useState(null);
   const [jd, setJd] = useState(JD);
   const [role, setRole] = useState('Software Development Engineer Intern');
-  const [result, setResult] = useState(demo);
+  const [result, setResult] = useState(null);
   const [busy, setBusy] = useState(false);
   const [authBusy, setAuthBusy] = useState(false);
   const [error, setError] = useState('');
@@ -462,7 +401,7 @@ function App() {
   }
 
   async function exportPdf() {
-    if (result.analysis_id && token) {
+    if (result?.analysis_id && token) {
       try {
         const r = await fetch(API + '/api/analyses/' + result.analysis_id + '/report', {
           headers,
@@ -541,7 +480,16 @@ function App() {
     }
   }
 
-  const s = result.summary || demo.summary;
+  const s = result?.summary || {
+    total: 0,
+    demonstrated: 0,
+    partial: 0,
+    missing: 0,
+    readiness: 0,
+  };
+  const skills = result?.skills || [];
+  const actionPlan = result?.action_plan || [];
+  const interviewQuestions = result?.interview_questions || [];
   const nav = [
     ['overview', 'Overview', LayoutDashboard],
     ['evidence', 'Evidence map', Fingerprint],
@@ -776,40 +724,49 @@ function App() {
               <section className="right">
                 <div className="panel snapshot">
                   <div className="snapshot-head">
-                    CAREER READINESS SNAPSHOT <small>● LIVE MAP</small>
+                    CAREER READINESS SNAPSHOT{' '}
+                    <small>{result ? '● LIVE MAP' : 'AWAITING ANALYSIS'}</small>
                   </div>
-                  <div className="score">
-                    <div>
-                      <strong>
-                        {s.readiness}
-                        <small>%</small>
-                      </strong>
-                      <b>Evidence coverage</b>
-                      <p>Weighted signal across role requirements</p>
-                    </div>
-                    <div className="donut" style={{ '--pct': s.readiness * 3.6 + 'deg' }}>
-                      <span>
-                        ◉
-                        <b>
-                          {s.readiness >= 75 ? 'Strong' : s.readiness >= 45 ? 'Building' : 'Early'}
-                        </b>
-                      </span>
-                    </div>
-                  </div>
-                  {[
-                    ['Demonstrated', s.demonstrated, 'green'],
-                    ['Partial support', s.partial, 'yellow'],
-                    ['Not evidenced', s.missing, 'red'],
-                  ].map(([n, v, c]) => (
-                    <div className="metric" key={n}>
-                      <i className={c} />
-                      {n}
-                      <b>{v}</b>
-                    </div>
-                  ))}
-                  <button className="link" onClick={() => setTab('evidence')}>
-                    Explore evidence map ↗
-                  </button>
+                  {result ? (
+                    <>
+                      <div className="score">
+                        <div>
+                          <strong>
+                            {s.readiness}
+                            <small>%</small>
+                          </strong>
+                          <b>Evidence coverage</b>
+                          <p>Weighted signal across role requirements</p>
+                        </div>
+                        <div className="donut" style={{ '--pct': s.readiness * 3.6 + 'deg' }}>
+                          <span>
+                            ◉
+                            <b>
+                              {s.readiness >= 75 ? 'Strong' : s.readiness >= 45 ? 'Building' : 'Early'}
+                            </b>
+                          </span>
+                        </div>
+                      </div>
+                      {[
+                        ['Demonstrated', s.demonstrated, 'green'],
+                        ['Partial support', s.partial, 'yellow'],
+                        ['Not evidenced', s.missing, 'red'],
+                      ].map(([n, v, c]) => (
+                        <div className="metric" key={n}>
+                          <i className={c} />
+                          {n}
+                          <b>{v}</b>
+                        </div>
+                      ))}
+                      <button className="link" onClick={() => setTab('evidence')}>
+                        Explore evidence map ↗
+                      </button>
+                    </>
+                  ) : (
+                    <p className="muted">
+                      Run an analysis to see evidence coverage and skill classifications.
+                    </p>
+                  )}
                 </div>
 
                 <div className="panel insight">
@@ -862,6 +819,8 @@ function App() {
 
           {tab === 'evidence' && (
             <>
+              {result ? (
+                <>
               <div className="evidence-top">
                 <div className="panel coverage">
                   <div className="eyebrow">ROLE EVIDENCE COVERAGE</div>
@@ -916,7 +875,7 @@ function App() {
               </div>
 
               <div className="skilllist">
-                {result.skills.map((x) => (
+                {skills.map((x) => (
                   <div className="skill" key={x.skill}>
                     <button
                       className="skillhead"
@@ -974,11 +933,26 @@ function App() {
                 ))}
               </div>
               <p className="disclaimer">{result.disclaimer}</p>
+                </>
+              ) : (
+                <div className="panel coverage">
+                  <h2>No evidence map yet</h2>
+                  <p className="muted">
+                    Choose a resume and job description on the overview page to generate real
+                    classifications and evidence anchors.
+                  </p>
+                  <button className="secondary" onClick={() => setTab('overview')}>
+                    Start an analysis ↗
+                  </button>
+                </div>
+              )}
             </>
           )}
 
           {tab === 'readiness' && (
             <>
+              {result ? (
+                <>
               <div className="evidence-top">
                 <div className="panel coverage">
                   <div className="eyebrow">ROLE READINESS SCORE</div>
@@ -1031,7 +1005,7 @@ function App() {
               </div>
 
               <div className="projects">
-                {result.skills
+                {skills
                   .filter((x) => x.status !== 'demonstrated')
                   .map((x) => (
                     <div className="panel project" key={x.skill}>
@@ -1059,7 +1033,7 @@ function App() {
               </div>
 
               <div className="projects">
-                {result.action_plan.slice(0, 3).map((x, i) => (
+                {actionPlan.slice(0, 3).map((x, i) => (
                   <div className="panel project" key={x.skill}>
                     <small>
                       SPRINT 0{i + 1} · {x.duration}
@@ -1070,11 +1044,25 @@ function App() {
                   </div>
                 ))}
               </div>
+                </>
+              ) : (
+                <div className="panel coverage">
+                  <h2>No readiness analysis yet</h2>
+                  <p className="muted">
+                    Run an analysis to view evidence coverage and the skills to strengthen.
+                  </p>
+                  <button className="secondary" onClick={() => setTab('overview')}>
+                    Start an analysis ↗
+                  </button>
+                </div>
+              )}
             </>
           )}
 
           {tab === 'roadmap' && (
             <>
+              {result ? (
+                <>
               <div className="panel intro">
                 <Target />
                 <div>
@@ -1086,7 +1074,7 @@ function App() {
                 </div>
               </div>
               <div className="projects">
-                {result.action_plan.map((p, i) => (
+                {actionPlan.map((p, i) => (
                   <div className="panel project" key={p.skill}>
                     <small>
                       SPRINT 0{i + 1} · ⚡ {p.duration}
@@ -1111,6 +1099,19 @@ function App() {
                   </div>
                 ))}
               </div>
+                </>
+              ) : (
+                <div className="panel coverage">
+                  <h2>No action plan yet</h2>
+                  <p className="muted">
+                    Analyze a resume against a role to get project recommendations based on its
+                    actual evidence gaps.
+                  </p>
+                  <button className="secondary" onClick={() => setTab('overview')}>
+                    Start an analysis ↗
+                  </button>
+                </div>
+              )}
             </>
           )}
 
@@ -1179,6 +1180,8 @@ function App() {
 
           {tab === 'interview' && (
             <>
+              {result ? (
+                <>
               <div className="panel intro">
                 <MessageSquareText />
                 <div>
@@ -1190,7 +1193,7 @@ function App() {
                 </div>
               </div>
               <div className="questions">
-                {result.interview_questions.map((q, i) => (
+                {interviewQuestions.map((q, i) => (
                   <div className="panel question" key={i}>
                     <small>Q{i + 1}</small>
                     <div>
@@ -1204,6 +1207,19 @@ function App() {
                   </div>
                 ))}
               </div>
+                </>
+              ) : (
+                <div className="panel coverage">
+                  <h2>No interview prompts yet</h2>
+                  <p className="muted">
+                    Run an analysis to prepare interview questions grounded in the selected role
+                    and resume.
+                  </p>
+                  <button className="secondary" onClick={() => setTab('overview')}>
+                    Start an analysis ↗
+                  </button>
+                </div>
+              )}
             </>
           )}
 
