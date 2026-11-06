@@ -68,7 +68,7 @@ Executed `.\start_local.ps1` from the release folder. It used the release-local 
 ## Remaining limitations and missing release items
 
 - No `LICENSE` file is present. Select and add a license before describing the project as an open-source release.
-- The release folder has Git history and tracks `origin/main`. Deployment-preparation changes are approved for commit and push; provider sign-in is still needed before deployment.
+- The release folder has Git history and tracks `origin/main`. Approved deployment-preparation changes were committed and pushed as `7b857cd`; provider sign-in is still needed before deployment.
 - No screenshots are available; the README contains a placeholder section.
 - Supabase authentication requires the user's own Supabase configuration. No account or database is shipped; guest analysis is available without Supabase.
 - The Python requirements use version ranges rather than a fully resolved lockfile. No frontend automated test suite is present; frontend validation here is the production build.
@@ -101,4 +101,4 @@ Pop-Location
 
 ## GitHub readiness
 
-**Technically ready for review:** backend tests, Python compilation, frontend production build, and startup smoke checks passed; the synthetic PDF was parsed and produced demonstrated, partial, and missing evidence results. **Not yet ready for public distribution as an open-source project until a license is selected.** GitHub publication is authorized by the owner; public deployment is pending provider sign-in.
+**Technically ready for review:** backend tests, Python compilation, frontend production build, and startup smoke checks passed; the synthetic PDF was parsed and produced demonstrated, partial, and missing evidence results. **Not yet ready for public distribution as an open-source project until a license is selected.** GitHub publication completed at `7b857cd`; public deployment is pending provider sign-in.

@@ -45,7 +45,7 @@ The Supabase URL and publishable key must refer to the same project in both serv
 
 ## Audit and local verification
 
-- Local source audit matched GitHub `main` at commit `63fcf84` before deployment-preparation changes. The deployment and demo changes are approved for commit and push.
+- Local source audit matched GitHub `main` at commit `63fcf84` before deployment-preparation changes. The reviewed release and demo changes are committed and pushed to `main` as `7b857cd`.
 - Backend tests: **40 passed** across three modules (`test_isolated_endpoints.py`: 10, `test_suite.py`: 19, `test_cors_production.py`: 11). These include the oversized-upload regression test. `compileall` and `pip check` passed.
 - Frontend `npm ci` had previously passed with 0 reported vulnerabilities. A Vite 8.3.5 production build passed with a test-only HTTPS API origin. A build using `http://localhost:8000` failed as intended. No localhost/loopback strings were found in the generated production JavaScript bundle.
 - The fictional PDF was generated, parsed as a one-page document, and uploaded to the local FastAPI guest endpoint using an isolated temporary database. The real API response contained 5 demonstrated, 3 partial, and 1 missing skill. This is a local integration test, not a public-service test.
